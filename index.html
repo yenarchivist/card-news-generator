@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Card-News Template Generator</title>
+
+<!-- Pretendard — jsdelivr CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css"/>
+
+<!-- Paperlogy — jsdelivr CDN -->
+<style>
+@font-face{font-family:'Paperlogy';src:url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-3Light.woff2') format('woff2');font-weight:300;font-display:swap;}
+@font-face{font-family:'Paperlogy';src:url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-4Regular.woff2') format('woff2');font-weight:400;font-display:swap;}
+@font-face{font-family:'Paperlogy';src:url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-5Medium.woff2') format('woff2');font-weight:500;font-display:swap;}
+@font-face{font-family:'Paperlogy';src:url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-6SemiBold.woff2') format('woff2');font-weight:600;font-display:swap;}
+@font-face{font-family:'Paperlogy';src:url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-7Bold.woff2') format('woff2');font-weight:700;font-display:swap;}
+@font-face{font-family:'Paperlogy';src:url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-8ExtraBold.woff2') format('woff2');font-weight:800;font-display:swap;}
+</style>
+
+<!-- 나머지 구글 폰트 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&family=Black+Han+Sans&family=Gowun+Dodum&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-shell:#EDEAE4;--panel-bg:#FAFAF8;--panel-border:#E2DDD6;
+    --text-primary:#1A1917;--text-secondary:#6B6560;--text-muted:#9C968F;
+    --accent-orange:#F47725;--input-bg:#F4F1EC;--input-border:#D8D3CB;
+    font-family:'Pretendard','Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-shell);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--panel-bg);border-bottom:1px solid var(--panel-border);position:sticky;top:0;z-index:100;}
+  .topbar-title{display:flex;align-items:center;gap:10px;}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--accent-orange);box-shadow:0 0 0 3px rgba(244,119,37,0.18);}
+  .topbar-title h1{font-family:'DM Serif Display','Noto Serif KR',serif;font-size:16px;letter-spacing:-0.02em;}
+  .topbar-title p{font-size:12px;color:var(--text-muted);margin-top:1px;}
+  .topbar-actions{display:flex;gap:8px;align-items:center;}
+
+  .btn{border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;padding:8px 14px;border-radius:12px;transition:all 0.15s;}
+  .btn-outline{background:transparent;border:1.5px solid var(--input-border);color:var(--text-secondary);}
+  .btn-outline:hover{border-color:var(--text-primary);color:var(--text-primary);}
+  .btn-primary{background:var(--text-primary);color:#fff;}
+  .btn-primary:hover{background:#2a2a28;}
+
+  .main-layout{display:grid;grid-template-columns:300px 1fr;flex:1;height:calc(100vh - 53px);}
+
+  .left-panel{background:var(--panel-bg);border-right:1px solid var(--panel-border);overflow-y:auto;padding-bottom:40px;}
+  .left-panel::-webkit-scrollbar{width:4px;}
+  .left-panel::-webkit-scrollbar-thumb{background:var(--input-border);border-radius:4px;}
+
+  .section{padding:16px 20px;border-bottom:1px solid var(--panel-border);}
+  .section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:11px;}
+
+  .template-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .tmpl-chip{padding:8px 10px;border-radius:9px;border:1.5px solid var(--input-border);background:var(--input-bg);font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all 0.13s;text-align:center;line-height:1.3;font-family:inherit;}
+  .tmpl-chip:hover{border-color:var(--accent-orange);color:var(--accent-orange);}
+  .tmpl-chip.active{border-color:var(--accent-orange);background:rgba(244,119,37,0.10);color:var(--accent-orange);font-weight:600;}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;}
+  .toggle-label{font-size:13px;color:var(--text-secondary);}
+  .toggle{position:relative;width:40px;height:22px;background:var(--input-border);border-radius:999px;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none;}
+  .toggle.on{background:var(--accent-orange);}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+  .toggle.on::after{left:21px;}
+
+  .color-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .color-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all 0.13s;}
+  .color-swatch.active{border-color:var(--text-primary);transform:scale(1.15);}
+
+  .styled-select{width:100%;padding:8px 10px;border:1.5px solid var(--input-border);border-radius:10px;background:var(--input-bg);color:var(--text-primary);font-family:inherit;font-size:12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239C968F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+  .styled-select:focus{outline:none;border-color:var(--accent-orange);}
+
+  /* 폰트 미리보기 */
+  .font-preview{margin-top:8px;padding:12px 14px;background:var(--input-bg);border-radius:9px;border:1px solid var(--input-border);}
+  .fp-ko{font-size:18px;color:var(--text-primary);line-height:1.4;}
+  .fp-tag{font-size:11px;color:var(--text-muted);margin-top:4px;font-family:'Pretendard','Noto Sans KR',sans-serif !important;}
+
+  .range-wrap{display:grid;gap:6px;}
+  .range-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);}
+  .range-meta strong{color:var(--text-primary);font-weight:600;}
+  input[type=range]{width:100%;height:4px;accent-color:var(--accent-orange);cursor:pointer;}
+  .gap-grid{display:grid;gap:14px;}
+
+  .canvas-area{display:flex;align-items:center;justify-content:center;padding:40px;overflow:auto;background:radial-gradient(ellipse at top left,rgba(244,119,37,0.07),transparent 50%),radial-gradient(ellipse at bottom right,rgba(234,0,44,0.04),transparent 50%),var(--bg-shell);}
+  .canvas-wrapper{position:relative;}
+  .canvas-label{position:absolute;top:-26px;left:0;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+  #card-canvas{display:block;box-shadow:0 2px 4px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.10),0 32px 64px rgba(0,0,0,0.12);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">
+    <div class="dot"></div>
+    <div>
+      <h1>Card-News Template Generator</h1>
+      <p>Blank corporate editorial templates · 1080 × 1350</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-outline" onclick="toggleGuide()">가이드: <span id="guide-state">ON</span></button>
+    <button class="btn btn-primary" onclick="exportPNG()">PNG 내보내기</button>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="left-panel">
+
+    <div class="section">
+      <div class="section-label">템플릿 유형</div>
+      <div class="template-grid">
+        <div class="tmpl-chip active" data-tmpl="cover" onclick="setTemplate('cover')">커버</div>
+        <div class="tmpl-chip" data-tmpl="article" onclick="setTemplate('article')">본문</div>
+        <div class="tmpl-chip" data-tmpl="checklist" onclick="setTemplate('checklist')">체크리스트</div>
+        <div class="tmpl-chip" data-tmpl="quote" onclick="setTemplate('quote')">인용 / 핵심</div>
+        <div class="tmpl-chip" data-tmpl="data" onclick="setTemplate('data')">데이터 인사이트</div>
+        <div class="tmpl-chip" data-tmpl="closing" onclick="setTemplate('closing')">마무리 요약</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">가이드 오버레이</div>
+      <div class="toggle-row">
+        <span class="toggle-label" id="guide-desc">안전 영역 가이드 표시</span>
+        <button class="toggle on" id="guide-toggle" onclick="toggleGuide()"></button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">🔤 글꼴 선택</div>
+      <select class="styled-select" id="font-select" onchange="setFont(this.value)">
+        <option value="Pretendard" data-ko="가나다라 마바사아 자차카타" data-tag="Pretendard · 상업 무료 · 현대 고딕 ★">Pretendard ★ — 현대적 고딕</option>
+        <option value="Paperlogy" data-ko="가나다라 마바사아 자차카타" data-tag="Paperlogy · 상업 무료 · PPT 최적화 ★">Paperlogy ★ — PPT 특화 고딕</option>
+        <option value="Noto Sans KR" data-ko="가나다라 마바사아 자차카타" data-tag="Noto Sans KR · 구글 폰트 · 범용 안정적">Noto Sans KR — 기본 고딕</option>
+        <option value="Noto Serif KR" data-ko="가나다라 마바사아 자차카타" data-tag="Noto Serif KR · 구글 폰트 · 격식 있는 세리프">Noto Serif KR — 세리프 격식체</option>
+        <option value="Black Han Sans" data-ko="가나다라 마바사아" data-tag="Black Han Sans · 구글 폰트 · 헤비 임팩트">Black Han Sans — 헤비 블랙</option>
+        <option value="Gowun Dodum" data-ko="가나다라 마바사아 자차카타" data-tag="고운돋움 · 구글 폰트 · 부드러운 감성">고운돋움 — 아날로그 감성</option>
+      </select>
+      <div class="font-preview">
+        <div class="fp-ko" id="fp-ko" style="font-family:'Pretendard',sans-serif;">가나다라 마바사아 자차카타</div>
+        <div class="fp-tag" id="fp-tag">Pretendard · 상업 무료 · 현대 고딕 ★</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">테마</div>
+      <select class="styled-select" onchange="setTheme(this.value)">
+        <option value="skWarm">SK Warm Editorial</option>
+        <option value="graphite">Graphite Calm</option>
+        <option value="deepNavy">Deep Navy Premium</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <div class="section-label">강조 색상</div>
+      <div class="color-row">
+        <div class="color-swatch active" style="background:#F47725" onclick="setAccent('#F47725',this)" title="SK Orange"></div>
+        <div class="color-swatch" style="background:#EA002C" onclick="setAccent('#EA002C',this)" title="SK Red"></div>
+        <div class="color-swatch" style="background:#A66F45" onclick="setAccent('#A66F45',this)" title="Warm Brown"></div>
+        <div class="color-swatch" style="background:#24415F" onclick="setAccent('#24415F',this)" title="Muted Navy"></div>
+        <div class="color-swatch" style="background:#333333" onclick="setAccent('#333333',this)" title="Charcoal"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 톤</div>
+      <select class="styled-select" onchange="setBg(this.value)">
+        <option value="#F8EFE5">웜 라이트 베이지</option>
+        <option value="#FBF7F0">소프트 아이보리</option>
+        <option value="#F2E7D8">에디토리얼 샌드</option>
+        <option value="#F4F0EA">웜 미스트</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <div class="section-label">외곽선</div>
+      <div class="toggle-row">
+        <span class="toggle-label">둥근 외곽선</span>
+        <button class="toggle on" id="border-toggle" onclick="toggleBorder()"></button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">CSS 변수 조정</div>
+      <div class="gap-grid">
+        <div class="range-wrap">
+          <div class="range-meta"><span>좌우 여백</span><strong id="mx-val">92px</strong></div>
+          <input type="range" min="72" max="128" step="4" value="92" oninput="setMX(this.value)">
+        </div>
+        <div class="range-wrap">
+          <div class="range-meta"><span>모서리 반경</span><strong id="cr-val">42px</strong></div>
+          <input type="range" min="16" max="64" step="2" value="42" oninput="setCR(this.value)">
+        </div>
+        <div class="range-wrap">
+          <div class="range-meta"><span>강조선 두께</span><strong id="at-val">8px</strong></div>
+          <input type="range" min="2" max="18" step="1" value="8" oninput="setAT(this.value)">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="canvas-area">
+    <div class="canvas-wrapper">
+      <div class="canvas-label">Preview — 1080 × 1350px</div>
+      <canvas id="card-canvas" width="1080" height="1350"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const CW=1080,CH=1350;
+const state={template:'cover',guideOn:true,borderOn:true,theme:'skWarm',accent:'#F47725',bg:'#F8EFE5',font:'Pretendard',marginX:92,cornerRadius:42,accentThickness:8};
+
+const THEMES={
+  skWarm:{title:'#171717',body:'#6F6861',border:'#CFC6BC',strongAccent:'#EA002C',line:'rgba(35,31,28,0.14)'},
+  graphite:{title:'#181818',body:'#6E7175',border:'#CACACA',strongAccent:'#2B2F34',line:'rgba(24,24,24,0.12)'},
+  deepNavy:{title:'#111722',body:'#68707C',border:'#C8CDD3',strongAccent:'#0E2237',line:'rgba(17,23,34,0.13)'}
+};
+const GUIDE_FILLS={chapter:'rgba(244,119,37,0.16)',headline:'rgba(234,0,44,0.11)',subtitle:'rgba(17,17,17,0.07)',body:'rgba(111,104,97,0.10)',visual:'rgba(36,65,95,0.10)',footer:'rgba(100,100,100,0.08)'};
+const GUIDE_STROKES={chapter:'rgba(244,119,37,0.55)',headline:'rgba(234,0,44,0.45)',subtitle:'rgba(17,17,17,0.30)',body:'rgba(111,104,97,0.40)',visual:'rgba(36,65,95,0.40)',footer:'rgba(100,100,100,0.36)'};
+
+const LAYOUTS={
+  cover:{guides:[{t:'chapter',x:92,y:98,w:230,h:46,l:'chapter label'},{t:'headline',x:92,y:230,w:748,h:284,l:'headline'},{t:'subtitle',x:92,y:568,w:690,h:96,l:'subtitle'},{t:'body',x:92,y:736,w:610,h:280,l:'body text'},{t:'visual',x:748,y:730,w:240,h:338,l:'image / visual'},{t:'footer',x:92,y:1192,w:896,h:58,l:'footer'}],accents:[{k:'bar',x:92,y:182,w:126,h:'at',c:'accent'},{k:'circle',x:850,y:148,w:138,h:138,c:'soft'},{k:'line',x:92,y:690,w:420,h:2,c:'line'},{k:'corner',x:874,y:1100,w:114,h:114,c:'accent'}]},
+  article:{guides:[{t:'chapter',x:92,y:88,w:220,h:42,l:'chapter label'},{t:'headline',x:92,y:172,w:780,h:144,l:'headline'},{t:'subtitle',x:92,y:344,w:720,h:70,l:'subtitle'},{t:'body',x:92,y:478,w:820,h:540,l:'body text'},{t:'visual',x:92,y:1062,w:820,h:116,l:'image / visual'},{t:'footer',x:92,y:1212,w:896,h:52,l:'footer'}],accents:[{k:'bar',x:92,y:438,w:760,h:2,c:'line'},{k:'vbar',x:936,y:92,w:'at',h:256,c:'accent'},{k:'circle',x:782,y:1000,w:206,h:206,c:'soft'}]},
+  checklist:{guides:[{t:'chapter',x:92,y:88,w:230,h:42,l:'chapter label'},{t:'headline',x:92,y:168,w:730,h:132,l:'headline'},{t:'subtitle',x:92,y:326,w:716,h:70,l:'subtitle'},{t:'body',x:92,y:466,w:820,h:128,l:'body text'},{t:'body',x:92,y:634,w:820,h:128,l:'body text'},{t:'body',x:92,y:802,w:820,h:128,l:'body text'},{t:'body',x:92,y:970,w:820,h:128,l:'body text'},{t:'footer',x:92,y:1202,w:896,h:58,l:'footer'}],accents:[{k:'bar',x:92,y:430,w:820,h:2,c:'line'},{k:'pill',x:842,y:168,w:86,h:28,c:'accent'},{k:'bar',x:92,y:612,w:820,h:2,c:'line'},{k:'bar',x:92,y:780,w:820,h:2,c:'line'},{k:'bar',x:92,y:948,w:820,h:2,c:'line'},{k:'bar',x:92,y:1116,w:820,h:2,c:'line'}]},
+  quote:{guides:[{t:'chapter',x:92,y:94,w:230,h:44,l:'chapter label'},{t:'headline',x:154,y:300,w:772,h:354,l:'headline'},{t:'subtitle',x:154,y:704,w:690,h:90,l:'subtitle'},{t:'body',x:154,y:862,w:690,h:188,l:'body text'},{t:'footer',x:92,y:1192,w:896,h:58,l:'footer'}],accents:[{k:'frame',x:118,y:250,w:840,h:620,c:'line'},{k:'bar',x:154,y:250,w:160,h:'at',c:'accent'},{k:'bar',x:784,y:862,w:142,h:'at',c:'strong'},{k:'circle',x:92,y:1030,w:116,h:116,c:'soft'}]},
+  data:{guides:[{t:'chapter',x:92,y:88,w:230,h:42,l:'chapter label'},{t:'headline',x:92,y:166,w:720,h:128,l:'headline'},{t:'subtitle',x:92,y:320,w:690,h:70,l:'subtitle'},{t:'visual',x:92,y:450,w:896,h:470,l:'image / visual'},{t:'body',x:92,y:982,w:896,h:146,l:'body text'},{t:'footer',x:92,y:1202,w:896,h:58,l:'footer'}],accents:[{k:'bar',x:92,y:414,w:896,h:2,c:'line'},{k:'panel',x:92,y:450,w:896,h:470,c:'soft'},{k:'bar',x:92,y:946,w:896,h:2,c:'line'},{k:'pill',x:842,y:166,w:100,h:30,c:'accent'}]},
+  closing:{guides:[{t:'chapter',x:92,y:96,w:230,h:42,l:'chapter label'},{t:'headline',x:92,y:210,w:780,h:188,l:'headline'},{t:'subtitle',x:92,y:438,w:718,h:72,l:'subtitle'},{t:'body',x:92,y:608,w:820,h:132,l:'body text'},{t:'body',x:92,y:782,w:820,h:132,l:'body text'},{t:'body',x:92,y:956,w:820,h:132,l:'body text'},{t:'footer',x:92,y:1196,w:896,h:58,l:'footer'}],accents:[{k:'bar',x:92,y:552,w:480,h:'at',c:'accent'},{k:'circle',x:804,y:162,w:184,h:184,c:'soft'},{k:'bar',x:92,y:760,w:820,h:2,c:'line'},{k:'bar',x:92,y:934,w:820,h:2,c:'line'},{k:'bar',x:92,y:1108,w:820,h:2,c:'line'}]}
+};
+
+function hexToRgba(hex,a){const n=hex.replace('#','');const b=parseInt(n,16);return `rgba(${(b>>16)&255},${(b>>8)&255},${b&255},${a})`;}
+function roundRect(ctx,x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+
+function draw(){
+  const canvas=document.getElementById('card-canvas');
+  const ctx=canvas.getContext('2d');
+  const T=THEMES[state.theme];
+  const at=state.accentThickness,cr=state.cornerRadius;
+  const layout=LAYOUTS[state.template];
+
+  ctx.clearRect(0,0,CW,CH);
+  roundRect(ctx,0,0,CW,CH,cr);ctx.fillStyle=state.bg;ctx.fill();
+
+  const grd=ctx.createLinearGradient(0,0,0,CH*0.38);
+  grd.addColorStop(0,'rgba(255,255,255,0.22)');grd.addColorStop(1,'rgba(255,255,255,0)');
+  roundRect(ctx,0,0,CW,CH,cr);ctx.fillStyle=grd;ctx.fill();
+
+  ctx.strokeStyle='rgba(255,255,255,0.13)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(state.marginX,0);ctx.lineTo(state.marginX,CH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(CW-state.marginX,0);ctx.lineTo(CW-state.marginX,CH);ctx.stroke();
+
+  const colorOf=c=>{
+    if(c==='accent')return state.accent;
+    if(c==='soft')return hexToRgba(state.accent,0.12);
+    if(c==='strong')return T.strongAccent;
+    if(c==='line')return T.line;
+    return state.accent;
+  };
+
+  for(const a of layout.accents){
+    const col=colorOf(a.c);
+    const aw=a.w==='at'?at:a.w,ah=a.h==='at'?at:a.h;
+    ctx.fillStyle=col;ctx.strokeStyle=col;
+    if(a.k==='bar'||a.k==='line'){ctx.beginPath();roundRect(ctx,a.x,a.y,aw,ah,Math.min(ah,aw)/2);ctx.fill();}
+    else if(a.k==='vbar'){ctx.beginPath();roundRect(ctx,a.x,a.y,aw,ah,aw/2);ctx.fill();}
+    else if(a.k==='circle'){ctx.beginPath();ctx.arc(a.x+a.w/2,a.y+a.h/2,a.w/2,0,Math.PI*2);ctx.fill();}
+    else if(a.k==='pill'){ctx.beginPath();roundRect(ctx,a.x,a.y,aw,ah,999);ctx.fill();}
+    else if(a.k==='panel'){ctx.fillStyle=hexToRgba(state.accent,0.09);ctx.beginPath();roundRect(ctx,a.x,a.y,aw,ah,20);ctx.fill();}
+    else if(a.k==='frame'){ctx.strokeStyle=T.line;ctx.lineWidth=2;ctx.beginPath();roundRect(ctx,a.x,a.y,aw,ah,20);ctx.stroke();}
+    else if(a.k==='corner'){ctx.strokeStyle=state.accent;ctx.lineWidth=at;ctx.lineCap='square';ctx.beginPath();ctx.moveTo(a.x,a.y+a.h);ctx.lineTo(a.x,a.y);ctx.lineTo(a.x+a.w,a.y);ctx.stroke();}
+  }
+
+  if(state.borderOn){ctx.strokeStyle=T.border;ctx.lineWidth=1.5;ctx.beginPath();roundRect(ctx,42,42,CW-84,CH-84,cr-10);ctx.stroke();}
+
+  if(state.guideOn){
+    const f=state.font;
+    for(const g of layout.guides){
+      ctx.fillStyle=GUIDE_FILLS[g.t];ctx.beginPath();roundRect(ctx,g.x,g.y,g.w,g.h,14);ctx.fill();
+      ctx.strokeStyle=GUIDE_STROKES[g.t];ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
+      ctx.beginPath();roundRect(ctx,g.x,g.y,g.w,g.h,14);ctx.stroke();ctx.setLineDash([]);
+      ctx.save();
+      ctx.font=`400 19px '${f}','Pretendard','Noto Sans KR',sans-serif`;
+      const tw=ctx.measureText(g.l).width;
+      const lw=tw+22,lh=26,lx=g.x+12,ly=g.y+10;
+      ctx.fillStyle='rgba(255,255,255,0.84)';ctx.beginPath();roundRect(ctx,lx,ly,lw,lh,999);ctx.fill();
+      ctx.fillStyle='rgba(24,24,24,0.66)';ctx.textBaseline='middle';
+      ctx.fillText(g.l,lx+11,ly+lh/2);
+      ctx.restore();
+    }
+  }
+}
+
+function setTemplate(t){state.template=t;document.querySelectorAll('.tmpl-chip').forEach(el=>el.classList.toggle('active',el.dataset.tmpl===t));draw();}
+function toggleGuide(){state.guideOn=!state.guideOn;document.getElementById('guide-toggle').classList.toggle('on',state.guideOn);document.getElementById('guide-state').textContent=state.guideOn?'ON':'OFF';document.getElementById('guide-desc').textContent=state.guideOn?'안전 영역 가이드 표시':'깨끗한 빈 배경 (내보내기용)';draw();}
+function toggleBorder(){state.borderOn=!state.borderOn;document.getElementById('border-toggle').classList.toggle('on',state.borderOn);draw();}
+function setTheme(t){state.theme=t;draw();}
+function setAccent(c,el){state.accent=c;document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');draw();}
+function setBg(v){state.bg=v;draw();}
+
+function setFont(v){
+  state.font=v;
+  const sel=document.getElementById('font-select');
+  const opt=sel.selectedOptions[0];
+  const fpKo=document.getElementById('fp-ko');
+  const fpTag=document.getElementById('fp-tag');
+  fpKo.style.fontFamily=`'${v}',sans-serif`;
+  fpKo.textContent=opt.dataset.ko||'가나다라 마바사아';
+  fpTag.textContent=opt.dataset.tag||v;
+  document.fonts.load(`400 20px '${v}'`).then(()=>draw()).catch(()=>draw());
+}
+
+function setMX(v){state.marginX=+v;document.getElementById('mx-val').textContent=v+'px';draw();}
+function setCR(v){state.cornerRadius=+v;document.getElementById('cr-val').textContent=v+'px';draw();}
+function setAT(v){state.accentThickness=+v;document.getElementById('at-val').textContent=v+'px';draw();}
+
+function exportPNG(){
+  const canvas=document.getElementById('card-canvas');
+  const suffix=state.guideOn?'with-guides':'clean';
+  const link=document.createElement('a');
+  link.download=`${state.template}-${suffix}.png`;
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+}
+
+function scaleCanvas(){
+  const area=document.querySelector('.canvas-area');
+  const availH=area.clientHeight-80,availW=area.clientWidth-80;
+  const scale=Math.min(availW/CW,availH/CH,0.65);
+  const c=document.getElementById('card-canvas');
+  c.style.width=(CW*scale)+'px';c.style.height=(CH*scale)+'px';
+  c.style.borderRadius=(state.cornerRadius*scale)+'px';
+}
+
+window.addEventListener('resize',scaleCanvas);
+document.fonts.ready.then(()=>{scaleCanvas();draw();});
+</script>
+</body>
+</html>
